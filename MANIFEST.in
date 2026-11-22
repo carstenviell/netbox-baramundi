@@ -1,0 +1,2 @@
+recursive-include netbox_baramundi/templates *
+recursive-include netbox_baramundi/locale *

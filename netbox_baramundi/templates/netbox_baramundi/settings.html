@@ -1,0 +1,28 @@
+{% extends 'generic/_base.html' %}
+{% load i18n form_helpers %}
+
+{% block title %}{% trans "baramundi settings" %}{% endblock %}
+
+{% block content %}
+  <form method="post" class="object-edit mt-3">
+    {% csrf_token %}
+    <div class="card mb-3">
+      <h2 class="card-header">{% trans "bConnect connection (API v2)" %}</h2>
+      <div class="card-body">
+        {% for field in form %}{% render_field field %}{% endfor %}
+        <div class="form-text">{% trans "The password is read from the named environment variable of the NetBox and worker containers; it is never stored in the database." %}</div>
+      </div>
+    </div>
+    <div class="btn-float-group-right">
+      <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+    </div>
+  </form>
+  <div class="d-flex gap-2 mt-3">
+    <form method="post" action="{% url 'plugins:netbox_baramundi:test_connection' %}">{% csrf_token %}
+      <button type="submit" class="btn btn-outline-secondary"><i class="mdi mdi-connection"></i> {% trans "Test connection" %}</button>
+    </form>
+    <form method="post" action="{% url 'plugins:netbox_baramundi:endpoint_sync' %}">{% csrf_token %}
+      <button type="submit" class="btn btn-outline-primary"><i class="mdi mdi-sync"></i> {% trans "Sync endpoint IDs now" %}</button>
+    </form>
+  </div>
+{% endblock %}

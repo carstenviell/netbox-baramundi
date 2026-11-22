@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 14:03+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "baramundi connection is not configured."
+msgstr "Die baramundi-Verbindung ist nicht konfiguriert."
+
+#, python-format
+msgid "Environment variable %(name)s is not set."
+msgstr "Umgebungsvariable %(name)s ist nicht gesetzt."
+
+#, python-format
+msgid "Response is not JSON (HTTP %(code)s)"
+msgstr "Antwort ist kein JSON (HTTP %(code)s)"
+
+#, python-format
+msgid "Too many pages from %(res)s"
+msgstr "Zu viele Seiten von %(res)s"
+
+msgid "baramundi endpoint ID"
+msgstr "baramundi-Endpoint-ID"
+
+msgid "Set by the endpoint sync; can be corrected manually"
+msgstr "Wird vom Endpoint-Abgleich gesetzt; kann manuell korrigiert werden"
+
+msgid "server URL"
+msgstr "Server-URL"
+
+msgid "e.g. https://bms.example.local (without /bconnect)"
+msgstr "z. B. https://bms.example.local (ohne /bconnect)"
+
+msgid "user"
+msgstr "Benutzer"
+
+msgid "password environment variable"
+msgstr "Umgebungsvariable für das Passwort"
+
+msgid "verify TLS"
+msgstr "TLS prüfen"
+
+msgid "CA bundle path"
+msgstr "Pfad zum CA-Bundle"
+
+msgid "timeout (s)"
+msgstr "Timeout (s)"
+
+msgid "baramundi settings"
+msgstr "baramundi-Einstellungen"
+
+msgid "No baramundi endpoint assigned (field: baramundi endpoint ID)."
+msgstr "Kein baramundi-Endpoint zugeordnet (Feld: baramundi-Endpoint-ID)."
+
+msgid "Endpoint"
+msgstr "Endpoint"
+
+msgid "Host name"
+msgstr "Hostname"
+
+msgid "Operating system"
+msgstr "Betriebssystem"
+
+msgid "Last seen"
+msgstr "Zuletzt gesehen"
+
+msgid "Logical group"
+msgstr "Logische Gruppe"
+
+msgid "bConnect connection (API v2)"
+msgstr "bConnect-Verbindung (API v2)"
+
+msgid "The password is read from the named environment variable of the NetBox and worker containers; it is never stored in the database."
+msgstr "Das Passwort wird aus der genannten Umgebungsvariable der NetBox- und Worker-Container gelesen und nie in der Datenbank gespeichert."
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Test connection"
+msgstr "Verbindung testen"
+
+msgid "Sync endpoint IDs now"
+msgstr "Endpoint-IDs jetzt abgleichen"
+
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+#, python-format
+msgid "Connection failed: %(err)s"
+msgstr "Verbindung fehlgeschlagen: %(err)s"
+
+#, python-format
+msgid "Connected to %(name)s, version %(version)s."
+msgstr "Verbunden mit %(name)s, Version %(version)s."
+
+msgid "Endpoint sync enqueued."
+msgstr "Endpoint-Abgleich eingereiht."
