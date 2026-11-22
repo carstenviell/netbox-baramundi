@@ -8,7 +8,9 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versio
 ### Open
 - Verify against a real bMS: connection test, endpoint sync, job assignment and `/Start`.
 
+## [0.1.3] – 2026-11-22
 ### Changed
+- Published on GitHub; installation from the GitHub release archive (`…/archive/refs/tags/v0.1.3.tar.gz`) instead of a local folder or package.
 - Documentation in two languages: `README.md`/`README.de.md`, `CHANGELOG.md`/`CHANGELOG.de.md`.
 
 ## [0.1.2] – 2026-11-22

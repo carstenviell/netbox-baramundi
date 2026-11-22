@@ -24,32 +24,56 @@
 
 ## Installation
 
-The plugin is not published on PyPI or GitHub yet. Build an archive from the repository (contains only
-versioned files) and copy it to the NetBox host:
-
-```bash
-git archive --format=tar.gz --prefix=netbox-baramundi-0.1.2/ -o dist/netbox-baramundi-0.1.2.tar.gz HEAD
-```
+The plugin is not published on PyPI. Install it from the GitHub release archive – this works without `git`,
+also in the netbox-docker image. Replace `v0.1.3` with the [release](https://github.com/carstenviell/netbox-baramundi/releases) you want.
 
 **NetBox installed from source (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install /path/to/netbox-baramundi-0.1.2.tar.gz
+sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.3.tar.gz
+
+# keep the plugin when NetBox is upgraded (upgrade.sh reinstalls local_requirements.txt)
+echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.3.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
 ```
 
-**netbox-docker:** put the archive next to your `Dockerfile-Plugins` and add
+**netbox-docker:** add to `plugin_requirements.txt`
+
+```text
+https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.3.tar.gz
+```
+
+and to `Dockerfile-Plugins` (build `netbox`, `netbox-worker` and `netbox-housekeeping` from it via `docker-compose.override.yml`):
 
 ```dockerfile
-COPY ./netbox-baramundi-0.1.2.tar.gz /opt/
-RUN /usr/local/bin/uv pip install /opt/netbox-baramundi-0.1.2.tar.gz
+FROM netboxcommunity/netbox:v4.7
+COPY ./plugin_requirements.txt /opt/netbox/
+RUN /usr/local/bin/uv pip install -r /opt/netbox/plugin_requirements.txt
 ```
 
-Enable it in `configuration.py` (Docker: `configuration/plugins.py`):
+Enable the plugin in `configuration.py` (Docker: `configuration/plugins.py`):
 
 ```python
-PLUGINS = ["netbox_baramundi"]
+PLUGINS = [
+    # ...
+    'netbox_baramundi',
+]
+```
+
+Apply the migrations and restart **both** services:
+
+```bash
+cd /opt/netbox/netbox
+sudo /opt/netbox/venv/bin/python manage.py migrate
+sudo systemctl restart netbox netbox-rq
+```
+
+Docker: `docker compose build --no-cache && docker compose up -d` – migrations run automatically at start.
+
+Optional settings (these are the defaults):
+
+```python
 PLUGINS_CONFIG = {
-    "netbox_baramundi": {                # optional - these are the defaults
+    "netbox_baramundi": {
         "endpoint_sync_interval_min": 1440,
         "panel_cache_seconds": 300,
     },
@@ -59,8 +83,12 @@ PLUGINS_CONFIG = {
 Provide the password of the bConnect user as environment variable `BARAMUNDI_PASSWORD` (or another name
 starting with `BARAMUNDI_`) for **both** the web service and the worker
 (systemd: `systemctl edit netbox netbox-rq` → `Environment=BARAMUNDI_PASSWORD=...`; Docker: `env/netbox.env`).
+After the restart open *Plugins → baramundi settings* (superusers only).
 
-Run `manage.py migrate`, restart `netbox` **and** `netbox-rq` (the worker runs the endpoint sync), then open *Plugins → baramundi settings* (superusers only).
+### Upgrade
+
+Install the new release archive (also update `local_requirements.txt` / `plugin_requirements.txt`),
+then `migrate` and restart (Docker: rebuild).
 
 ## Configuration
 

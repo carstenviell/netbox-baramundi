@@ -8,7 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ### Offen
 - Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
 
+## [0.1.3] – 2026-11-22
 ### Geändert
+- Auf GitHub veröffentlicht; Installation aus dem GitHub-Release-Archiv (`…/archive/refs/tags/v0.1.3.tar.gz`) statt aus lokalem Ordner bzw. Paket.
 - Dokumentation zweisprachig: `README.md`/`README.de.md`, `CHANGELOG.md`/`CHANGELOG.de.md`.
 
 ## [0.1.2] – 2026-11-22
