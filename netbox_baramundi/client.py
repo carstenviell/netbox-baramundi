@@ -43,15 +43,22 @@ class BConnect:
         self.timeout = timeout
 
     @classmethod
-    def from_settings(cls):
-        from .models import BaramundiSettings
+    def from_settings(cls, timeout=None):
+        from django.core.exceptions import ValidationError
+        from .models import BaramundiSettings, env_name, https_only
         s = BaramundiSettings.load()
         if not s.url or not s.username:
             raise BConnectError(_('baramundi connection is not configured.'))
-        password = os.environ.get(s.password_env or '')
+        try:  # re-check: the values could have been changed directly in the database
+            https_only(s.url)
+            env_name(s.password_env)
+        except ValidationError as exc:
+            raise BConnectError(' '.join(exc.messages))
+        password = os.environ.get(s.password_env)
         if not password:
             raise BConnectError(_('Environment variable %(name)s is not set.') % {'name': s.password_env})
-        return cls(s.url, s.username, password, verify=s.ca_bundle or s.verify_tls, timeout=s.timeout)
+        return cls(s.url, s.username, password, verify=s.ca_bundle or s.verify_tls,
+                   timeout=min(s.timeout, timeout) if timeout else s.timeout)
 
     # -- transport -----------------------------------------------------------
     def request(self, method, area, resource, params=None, json=None):

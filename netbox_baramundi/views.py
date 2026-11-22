@@ -12,8 +12,15 @@ from .models import BaramundiSettings
 PERM = 'netbox_baramundi.change_baramundisettings'
 
 
-class SettingsView(PermissionRequiredMixin, View):
+class SuperuserMixin(PermissionRequiredMixin):
+    """Settings decide where the service-account password is sent - superusers only."""
     permission_required = PERM
+
+    def has_permission(self):
+        return self.request.user.is_superuser and super().has_permission()
+
+
+class SettingsView(SuperuserMixin, View):
     template_name = 'netbox_baramundi/settings.html'
 
     def get(self, request):
@@ -30,8 +37,7 @@ class SettingsView(PermissionRequiredMixin, View):
         return render(request, self.template_name, {'form': form})
 
 
-class TestConnectionView(PermissionRequiredMixin, View):
-    permission_required = PERM
+class TestConnectionView(SuperuserMixin, View):
 
     def post(self, request):
         try:

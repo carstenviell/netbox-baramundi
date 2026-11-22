@@ -51,6 +51,7 @@ def sync_endpoint_ids(client, logger):
         if state == 'matched':
             obj.custom_field_data[CF_ENDPOINT] = value
             obj.save()
+            logger.info(f'{obj}: assigned baramundi endpoint {value}')  # audit trail of automatic assignments
         elif state == 'ambiguous':
             logger.warning(f'{obj}: several baramundi endpoints match: {", ".join(value)}')
     logger.info(f"Endpoint sync: {counts['matched']} assigned, {counts['ambiguous']} ambiguous, "

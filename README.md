@@ -5,7 +5,9 @@ NetBox plugin integrating the **baramundi Management Suite** via the **bConnect 
 - Settings page with *Test connection* (shows the name and version of the management server)
 - Custom field `baramundi_endpoint_id` on devices and VMs, filled by an **endpoint sync**
   (daily and on demand): host name / display name, case-insensitive, short name vs. FQDN.
-  Only empty fields are filled – existing values are never overwritten; ambiguous matches are only reported.
+  Only empty fields are filled – existing values are never overwritten; ambiguous matches are only reported,
+  every assignment is written to the job log. With several domains, check the log: a short name is matched to
+  an FQDN only if it is unique.
 - *baramundi* panel on device/VM pages (endpoint, host name, OS, last seen; cached for 5 minutes)
 - `netbox_baramundi.client.BConnect` for other plugins, e.g. the baramundi backend of
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
@@ -29,13 +31,13 @@ PLUGINS_CONFIG = {
 }
 ```
 
-Run `manage.py migrate`, then open *Plugins → baramundi settings*:
+Run `manage.py migrate`, then open *Plugins → baramundi settings* (superusers only):
 
 | Setting | |
 |---|---|
-| Server URL | e.g. `https://bms.example.local` (without `/bconnect`) |
+| Server URL | e.g. `https://bms.example.local` (without `/bconnect`; HTTPS only) |
 | User | bConnect user (HTTP basic auth); grant only the rights you need: read endpoints and job definitions, assign jobs, read job instances and update management |
-| Password environment variable | Name of the variable that holds the password in the NetBox **and** worker containers (default `BARAMUNDI_PASSWORD`). The password is never stored in the database. |
+| Password environment variable | Name of the variable that holds the password in the NetBox **and** worker containers (must start with `BARAMUNDI_`, default `BARAMUNDI_PASSWORD`). The password is never stored in the database. |
 | Verify TLS / CA bundle | Keep TLS verification on; point to your CA bundle for an internal CA |
 
 ## License

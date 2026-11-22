@@ -34,6 +34,23 @@ class MatchTests(TestCase):
         self.assertEqual(r['e'], ('matched', G2))
         self.assertEqual(match_endpoints({'x': 'app.third.local'}, ENDPOINTS)['x'][0], 'ambiguous')
 
+    def test_endpoint_id_validated(self):
+        from types import SimpleNamespace
+        from .custom_fields import endpoint_id_for
+        self.assertEqual(endpoint_id_for(SimpleNamespace(custom_field_data={CF_ENDPOINT: G1})), G1)
+        for bad in ('../../jobs/v2.0/JobInstances', G1 + '/x', '', None):
+            self.assertIsNone(endpoint_id_for(SimpleNamespace(custom_field_data={CF_ENDPOINT: bad})))
+
+    def test_settings_validators(self):
+        from django.core.exceptions import ValidationError
+        from .models import BaramundiSettings
+        for field, value in (('url', 'http://bms.example.test'), ('password_env', 'SECRET_KEY'),
+                             ('password_env', 'BARAMUNDI_x;y')):
+            s = BaramundiSettings(url='https://bms.example.test', username='u', password_env='BARAMUNDI_PASSWORD')
+            setattr(s, field, value)
+            with self.subTest(field=field, value=value), self.assertRaises(ValidationError):
+                s.full_clean()
+
     def test_outcome(self):
         self.assertEqual([job_outcome(s) for s in ('FinishedSuccessfully', 'FinishedWithError', 'Cancelled',
                                                    'Running', None)],
@@ -117,5 +134,10 @@ class ClientTests(TestCase):
         self.assertEqual(counts['matched'], 1)
 
     def test_views(self):
+        from django.contrib.auth.models import Permission
+        staff = User.objects.create(username='staff_b')
+        staff.user_permissions.add(Permission.objects.get(codename='change_baramundisettings'))
+        self.client.force_login(staff)
+        self.assertEqual(self.client.get('/plugins/baramundi/settings/').status_code, 403)  # superuser only
         self.client.force_login(User.objects.create(username='admin_b', is_superuser=True))
         self.assertEqual(self.client.get('/plugins/baramundi/settings/').status_code, 200)

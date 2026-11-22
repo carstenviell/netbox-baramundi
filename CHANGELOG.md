@@ -5,7 +5,15 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ## [Unveröffentlicht]
 ### Offen
 - Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
-- Security-Audit (`SECURITY-ANALYSE-<Datum>.md`).
+
+## [0.1.1] – 2026-11-22
+### Sicherheit
+Ergebnis des Security-Audits vom 2026-11-22 (Bericht lokal, nicht im Repo):
+- Server-URL nur noch `https://` (Basic Auth nie im Klartext), Passwort-Variable muss mit `BARAMUNDI_` beginnen – vorher hätte die Einstellungsseite beliebige Prozess-Secrets an einen beliebigen Host senden können. Prüfung beim Speichern und beim Verbindungsaufbau.
+- Endpoint-ID wird vor jeder Verwendung als GUID geprüft (Feld-Regex wirkt nur in Formularen; ein per API gesetzter Wert konnte den Request-Pfad verändern).
+- Einstellungen und Verbindungstest nur für Superuser.
+- Panel: Timeout max. 5 s, Fehler 60 s gecacht (Seiten hängen nicht, wenn der bMS nicht erreichbar ist).
+- Endpoint-Abgleich protokolliert jede automatische Zuordnung im Job-Log.
 
 ## [0.1.0] – 2026-11-22
 ### Neu

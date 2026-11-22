@@ -11,11 +11,12 @@ def cached_endpoint(endpoint_id):
     key = f'netbox_baramundi:endpoint:{endpoint_id}'
     data = cache.get(key)
     if data is None:
-        try:
-            data = {'endpoint': BConnect.from_settings().endpoint(endpoint_id)}
+        try:  # short timeout: the device page must not hang when the bMS is unreachable
+            data = {'endpoint': BConnect.from_settings(timeout=5).endpoint(endpoint_id)}
+            cache.set(key, data, get_plugin_config('netbox_baramundi', 'panel_cache_seconds'))
         except BConnectError as exc:
-            return {'error': str(exc)}
-        cache.set(key, data, get_plugin_config('netbox_baramundi', 'panel_cache_seconds'))
+            data = {'error': str(exc)}
+            cache.set(key, data, 60)  # also cache errors briefly - no 5 s wait on every page view
     return data
 
 

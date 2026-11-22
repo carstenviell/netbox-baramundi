@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 14:03+0100\n"
+"POT-Creation-Date: 2026-11-22 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,6 +38,13 @@ msgstr "baramundi-Endpoint-ID"
 msgid "Set by the endpoint sync; can be corrected manually"
 msgstr "Wird vom Endpoint-Abgleich gesetzt; kann manuell korrigiert werden"
 
+msgid "Only https:// URLs are allowed."
+msgstr "Nur https://-URLs sind erlaubt."
+
+#, python-format
+msgid "The variable name must start with %(p)s (A-Z, 0-9, _)."
+msgstr "Der Variablenname muss mit %(p)s beginnen (A-Z, 0-9, _)."
+
 msgid "server URL"
 msgstr "Server-URL"
 
@@ -49,6 +56,9 @@ msgstr "Benutzer"
 
 msgid "password environment variable"
 msgstr "Umgebungsvariable für das Passwort"
+
+msgid "Must start with BARAMUNDI_"
+msgstr "Muss mit BARAMUNDI_ beginnen"
 
 msgid "verify TLS"
 msgstr "TLS prüfen"
