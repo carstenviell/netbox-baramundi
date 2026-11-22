@@ -9,7 +9,6 @@ dist/
 build/
 .venv/
 .claude/
-*.mo
 
 CLAUDE.md
 INTERN.md

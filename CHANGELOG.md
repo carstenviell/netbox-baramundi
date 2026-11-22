@@ -6,6 +6,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 ### Offen
 - Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
 
+## [0.1.2] – 2026-11-22
+### Behoben
+- Installationsanleitung: Installation aus dem lokalen Ordner (nicht auf PyPI/GitHub) für Source-Installation und netbox-docker, Passwort-Variable für Web **und** Worker, Neustart des Workers.
+- Kompilierte deutsche Übersetzung (`django.mo`) wird mitgeliefert (ohne `gettext` auf dem Zielsystem blieb die Oberfläche englisch).
+
 ## [0.1.1] – 2026-11-22
 ### Sicherheit
 Ergebnis des Security-Audits vom 2026-11-22 (Bericht lokal, nicht im Repo):

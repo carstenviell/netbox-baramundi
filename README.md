@@ -17,21 +17,39 @@ Requires NetBox ≥ 4.7 and **baramundi bConnect API v2**.
 
 ## Installation
 
+The plugin is not published on PyPI or GitHub yet. Copy the repository folder to the NetBox host
+(**without** any `bConnect_*.json` files) and install it from there.
+
+**NetBox installed from source (systemd):**
+
 ```bash
-pip install netbox-baramundi
+sudo /opt/netbox/venv/bin/pip install /path/to/netbox-baramundi
 ```
+
+**netbox-docker:** copy the folder next to your `Dockerfile-Plugins` and add
+
+```dockerfile
+COPY ./netbox-baramundi /opt/netbox-baramundi
+RUN /usr/local/bin/uv pip install /opt/netbox-baramundi
+```
+
+Enable it in `configuration.py` (Docker: `configuration/plugins.py`):
 
 ```python
 PLUGINS = ["netbox_baramundi"]
 PLUGINS_CONFIG = {
-    "netbox_baramundi": {
+    "netbox_baramundi": {                # optional - these are the defaults
         "endpoint_sync_interval_min": 1440,
         "panel_cache_seconds": 300,
     },
 }
 ```
 
-Run `manage.py migrate`, then open *Plugins → baramundi settings* (superusers only):
+Provide the password of the bConnect user as environment variable `BARAMUNDI_PASSWORD` (or another name
+starting with `BARAMUNDI_`) for **both** the web service and the worker
+(systemd: `systemctl edit netbox netbox-rq` → `Environment=BARAMUNDI_PASSWORD=...`; Docker: `env/netbox.env`).
+
+Run `manage.py migrate`, restart `netbox` **and** `netbox-rq` (the worker runs the endpoint sync), then open *Plugins → baramundi settings* (superusers only):
 
 | Setting | |
 |---|---|
