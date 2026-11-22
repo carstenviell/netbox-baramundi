@@ -1,29 +1,34 @@
+**English** | [Deutsch](CHANGELOG.de.md)
+
 # Changelog
 
-Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionen nach [SemVer](https://semver.org/lang/de/).
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 
-## [Unveröffentlicht]
-### Offen
-- Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
+## [Unreleased]
+### Open
+- Verify against a real bMS: connection test, endpoint sync, job assignment and `/Start`.
+
+### Changed
+- Documentation in two languages: `README.md`/`README.de.md`, `CHANGELOG.md`/`CHANGELOG.de.md`.
 
 ## [0.1.2] – 2026-11-22
-### Behoben
-- Installationsanleitung: Installation aus dem lokalen Ordner (nicht auf PyPI/GitHub) für Source-Installation und netbox-docker, Passwort-Variable für Web **und** Worker, Neustart des Workers.
-- Kompilierte deutsche Übersetzung (`django.mo`) wird mitgeliefert (ohne `gettext` auf dem Zielsystem blieb die Oberfläche englisch).
+### Fixed
+- Installation guide: installation from the local folder (not on PyPI/GitHub) for source installation and netbox-docker, password variable for web **and** worker, worker restart.
+- The compiled German translation (`django.mo`) is shipped (without `gettext` on the target system the UI stayed English).
 
 ## [0.1.1] – 2026-11-22
-### Sicherheit
-Ergebnis des Security-Audits vom 2026-11-22 (Bericht lokal, nicht im Repo):
-- Server-URL nur noch `https://` (Basic Auth nie im Klartext), Passwort-Variable muss mit `BARAMUNDI_` beginnen – vorher hätte die Einstellungsseite beliebige Prozess-Secrets an einen beliebigen Host senden können. Prüfung beim Speichern und beim Verbindungsaufbau.
-- Endpoint-ID wird vor jeder Verwendung als GUID geprüft (Feld-Regex wirkt nur in Formularen; ein per API gesetzter Wert konnte den Request-Pfad verändern).
-- Einstellungen und Verbindungstest nur für Superuser.
-- Panel: Timeout max. 5 s, Fehler 60 s gecacht (Seiten hängen nicht, wenn der bMS nicht erreichbar ist).
-- Endpoint-Abgleich protokolliert jede automatische Zuordnung im Job-Log.
+### Security
+Result of the security audit of 2026-11-22 (report kept locally, not in the repository):
+- Server URL only `https://` (basic auth never in plain text), the password variable must start with `BARAMUNDI_` – before, the settings page could have sent any process secret to any host. Checked when saving and when connecting.
+- The endpoint ID is validated as GUID before every use (the field regex only applies in forms; a value set via API could change the request path).
+- Settings and connection test for superusers only.
+- Panel: timeout max. 5 s, errors cached for 60 s (pages do not hang when the bMS is unreachable).
+- The endpoint sync logs every automatic assignment in the job log.
 
 ## [0.1.0] – 2026-11-22
-### Neu
-- Einstellungsseite für die bConnect-Verbindung (API v2, HTTP Basic Auth; Passwort nur über Umgebungsvariable) mit „Verbindung testen“ (Name/Version des Management-Servers).
-- Client `BConnect` (Paging, Fehlerdetails, kein Retry bei schreibenden Aufrufen): Management-Server, Endpoints, Job-Definitionen, Job-Instanzen anlegen/starten/lesen, Windows-Update-Stand.
-- Custom Field `baramundi_endpoint_id` an Devices/VMs, Endpoint-Abgleich (täglich und per Button), füllt nur leere Felder, meldet Mehrdeutigkeiten.
-- Panel „baramundi“ auf Device-/VM-Seiten (live, gecacht).
-- Deutsche Übersetzung.
+### Added
+- Settings page for the bConnect connection (API v2, HTTP basic auth; password only via environment variable) with "Test connection" (name/version of the management server).
+- Client `BConnect` (paging, error details, no retry for write calls): management server, endpoints, job definitions, create/start/read job instances, Windows update state.
+- Custom field `baramundi_endpoint_id` on devices/VMs, endpoint sync (daily and via button), fills only empty fields, reports ambiguities.
+- Panel "baramundi" on device/VM pages (live, cached).
+- German translation.

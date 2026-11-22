@@ -1,6 +1,10 @@
+**English** | [Deutsch](README.de.md)
+
 # NetBox baramundi
 
-NetBox plugin integrating the **baramundi Management Suite** via the **bConnect REST API v2**.
+[NetBox](https://github.com/netbox-community/netbox) plugin integrating the **baramundi Management Suite** via the **bConnect REST API v2**.
+
+## Features
 
 - Settings page with *Test connection* (shows the name and version of the management server)
 - Custom field `baramundi_endpoint_id` on devices and VMs, filled by an **endpoint sync**
@@ -13,7 +17,10 @@ NetBox plugin integrating the **baramundi Management Suite** via the **bConnect 
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
   (start patch jobs, job status, Windows update compliance)
 
-Requires NetBox ≥ 4.7 and **baramundi bConnect API v2**.
+## Requirements
+
+- NetBox **4.7** or later
+- **baramundi bConnect API v2**
 
 ## Installation
 
@@ -53,7 +60,9 @@ Provide the password of the bConnect user as environment variable `BARAMUNDI_PAS
 starting with `BARAMUNDI_`) for **both** the web service and the worker
 (systemd: `systemctl edit netbox netbox-rq` → `Environment=BARAMUNDI_PASSWORD=...`; Docker: `env/netbox.env`).
 
-Run `manage.py migrate`, restart `netbox` **and** `netbox-rq` (the worker runs the endpoint sync), then open *Plugins → baramundi settings* (superusers only):
+Run `manage.py migrate`, restart `netbox` **and** `netbox-rq` (the worker runs the endpoint sync), then open *Plugins → baramundi settings* (superusers only).
+
+## Configuration
 
 | Setting | |
 |---|---|
@@ -62,6 +71,11 @@ Run `manage.py migrate`, restart `netbox` **and** `netbox-rq` (the worker runs t
 | Password environment variable | Name of the variable that holds the password in the NetBox **and** worker containers (must start with `BARAMUNDI_`, default `BARAMUNDI_PASSWORD`). The password is never stored in the database. |
 | Verify TLS / CA bundle | Keep TLS verification on; point to your CA bundle for an internal CA |
 
+## Language
+
+The user interface is English and ships with a German translation. It follows the language the user selected in
+NetBox (*Profile → Preferences → Language*); languages without a translation fall back to English.
+
 ## License
 
-Apache-2.0. baramundi and bConnect are trademarks of their respective owner; this plugin is not affiliated with baramundi.
+[Apache License 2.0](LICENSE). baramundi and bConnect are trademarks of their respective owner; this plugin is not affiliated with baramundi.

@@ -23,6 +23,16 @@ ENDPOINTS = [  # self-made minimal records
 ]
 
 
+def grant(user, model, actions, constraints=None):
+    """NetBox evaluates permissions via ObjectPermission only (Django user_permissions are ignored)."""
+    from django.contrib.contenttypes.models import ContentType
+    from users.models import ObjectPermission
+    perm = ObjectPermission.objects.create(name=f'test {model.__name__} {actions}', actions=actions,
+                                           constraints=constraints)
+    perm.object_types.add(ContentType.objects.get_for_model(model))
+    perm.users.add(user)
+
+
 class MatchTests(TestCase):
     def test_match(self):
         r = match_endpoints({'a': 'SRV01', 'b': 'srv01.example.local', 'c': 'app', 'd': 'nothere',
@@ -134,10 +144,27 @@ class ClientTests(TestCase):
         self.assertEqual(counts['matched'], 1)
 
     def test_views(self):
-        from django.contrib.auth.models import Permission
+        from .models import BaramundiSettings
         staff = User.objects.create(username='staff_b')
-        staff.user_permissions.add(Permission.objects.get(codename='change_baramundisettings'))
+        grant(staff, BaramundiSettings, ['view', 'change'])
+        self.assertTrue(staff.has_perm('netbox_baramundi.change_baramundisettings'))  # has the permission ...
         self.client.force_login(staff)
         self.assertEqual(self.client.get('/plugins/baramundi/settings/').status_code, 403)  # superuser only
         self.client.force_login(User.objects.create(username='admin_b', is_superuser=True))
         self.assertEqual(self.client.get('/plugins/baramundi/settings/').status_code, 200)
+
+
+class TranslationTests(TestCase):
+    def test_compiled_catalog_is_current(self):
+        """django.mo is shipped (target systems usually lack gettext) - it must contain every translated msgid."""
+        import gettext
+        import os
+        import re
+        base = os.path.join(os.path.dirname(__file__), 'locale', 'de', 'LC_MESSAGES')
+        po = open(os.path.join(base, 'django.po'), encoding='utf-8').read()
+        with open(os.path.join(base, 'django.mo'), 'rb') as f:
+            catalog = gettext.GNUTranslations(f)._catalog
+        missing = [m for m in re.findall(r'^msgid "(.+)"\nmsgstr "(?!")', po, re.M)
+                   if m.replace('\\"', '"') not in catalog]
+        self.assertEqual(missing, [], 'django.mo is outdated - run makemessages/msgfmt (see CLAUDE.md)')
+        self.assertEqual(re.findall(r'^#, .*fuzzy.*\n(?:#\|.*\n)*msgid "(.*)"', po, re.M), [], 'fuzzy (guessed) translations - fix them')
