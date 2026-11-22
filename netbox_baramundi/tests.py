@@ -154,6 +154,20 @@ class ClientTests(TestCase):
         self.assertEqual(self.client.get('/plugins/baramundi/settings/').status_code, 200)
 
 
+    def test_endpoint_tab(self):
+        ensure_custom_fields()
+        site = Site.objects.create(name='S2', slug='s2')
+        dt = DeviceType.objects.create(manufacturer=Manufacturer.objects.create(name='M2', slug='m2'), model='T2', slug='t2')
+        role = DeviceRole.objects.create(name='R2', slug='r2')
+        with_id = Device.objects.create(name='with-id', site=site, device_type=dt, role=role,
+                                        custom_field_data={CF_ENDPOINT: G1})
+        without = Device.objects.create(name='without-id', site=site, device_type=dt, role=role)
+        self.client.force_login(User.objects.create(username='admin_t', is_superuser=True))
+        tab = f'{with_id.get_absolute_url()}baramundi/'
+        self.assertContains(self.client.get(with_id.get_absolute_url()), f'href="{tab}"')
+        self.assertNotContains(self.client.get(without.get_absolute_url()), 'baramundi/"')
+        self.assertContains(self.client.get(tab), 'alert-warning')  # not configured: shown, never raised
+
 class TranslationTests(TestCase):
     def test_compiled_catalog_is_current(self):
         """django.mo is shipped (target systems usually lack gettext) - it must contain every translated msgid."""

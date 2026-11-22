@@ -118,3 +118,7 @@ msgstr "Verbunden mit %(name)s, Version %(version)s."
 
 msgid "Endpoint sync enqueued."
 msgstr "Endpoint-Abgleich eingereiht."
+
+#: netbox_baramundi/templates/netbox_baramundi/endpoint_card.html
+msgid "Details"
+msgstr "Details"

@@ -12,7 +12,7 @@
   Only empty fields are filled – existing values are never overwritten; ambiguous matches are only reported,
   every assignment is written to the job log. With several domains, check the log: a short name is matched to
   an FQDN only if it is unique.
-- *baramundi* panel on device/VM pages (endpoint, host name, OS, last seen; cached for 5 minutes)
+- *baramundi* card on device/VM pages (endpoint ID) and a *baramundi* tab with live endpoint data (host name, OS, last seen; cached for 5 minutes). bConnect is only queried when the tab is opened.
 - `netbox_baramundi.client.BConnect` for other plugins, e.g. the baramundi backend of
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
   (start patch jobs, job status, Windows update compliance)

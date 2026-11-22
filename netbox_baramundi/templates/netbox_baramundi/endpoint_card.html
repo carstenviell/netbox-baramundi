@@ -1,0 +1,14 @@
+{% load i18n helpers %}
+<div class="card">
+  <h2 class="card-header">baramundi</h2>
+  {% if endpoint_id %}
+    <table class="table table-hover attr-table mb-0">
+      <tr><th scope="row">{% trans "Endpoint" %}</th><td><code class="small">{{ endpoint_id }}</code></td></tr>
+    </table>
+    <div class="card-footer d-flex justify-content-end">
+      <a href="{% url object|viewname:'baramundi' pk=object.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Details" %} <i class="mdi mdi-arrow-right"></i></a>
+    </div>
+  {% else %}
+    <div class="card-body text-muted">{% trans "No baramundi endpoint assigned (field: baramundi endpoint ID)." %}</div>
+  {% endif %}
+</div>

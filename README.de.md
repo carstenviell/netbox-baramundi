@@ -13,7 +13,7 @@
   Es werden nur leere Felder befüllt – vorhandene Werte werden nie überschrieben; mehrdeutige Treffer werden nur
   gemeldet, jede Zuordnung steht im Job-Log. Bei mehreren Domänen das Log prüfen: Ein Kurzname wird nur dann einem
   FQDN zugeordnet, wenn er eindeutig ist.
-- Bereich *baramundi* auf Geräte-/VM-Seiten (Endpoint, Hostname, Betriebssystem, zuletzt gesehen; 5 Minuten gecacht)
+- Karte *baramundi* auf Geräte-/VM-Seiten (Endpoint-ID) und Tab *baramundi* mit Live-Daten des Endpoints (Hostname, Betriebssystem, zuletzt gesehen; 5 Minuten gecacht). bConnect wird erst beim Öffnen des Tabs abgefragt.
 - `netbox_baramundi.client.BConnect` für andere Plugins, z. B. das baramundi-Backend von
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
   (Patch-Jobs starten, Job-Status, Windows-Update-Compliance)
