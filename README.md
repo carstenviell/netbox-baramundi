@@ -17,20 +17,24 @@ Requires NetBox ≥ 4.7 and **baramundi bConnect API v2**.
 
 ## Installation
 
-The plugin is not published on PyPI or GitHub yet. Copy the repository folder to the NetBox host
-(**without** any `bConnect_*.json` files) and install it from there.
+The plugin is not published on PyPI or GitHub yet. Build an archive from the repository (contains only
+versioned files) and copy it to the NetBox host:
+
+```bash
+git archive --format=tar.gz --prefix=netbox-baramundi-0.1.2/ -o dist/netbox-baramundi-0.1.2.tar.gz HEAD
+```
 
 **NetBox installed from source (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install /path/to/netbox-baramundi
+sudo /opt/netbox/venv/bin/pip install /path/to/netbox-baramundi-0.1.2.tar.gz
 ```
 
-**netbox-docker:** copy the folder next to your `Dockerfile-Plugins` and add
+**netbox-docker:** put the archive next to your `Dockerfile-Plugins` and add
 
 ```dockerfile
-COPY ./netbox-baramundi /opt/netbox-baramundi
-RUN /usr/local/bin/uv pip install /opt/netbox-baramundi
+COPY ./netbox-baramundi-0.1.2.tar.gz /opt/
+RUN /usr/local/bin/uv pip install /opt/netbox-baramundi-0.1.2.tar.gz
 ```
 
 Enable it in `configuration.py` (Docker: `configuration/plugins.py`):
