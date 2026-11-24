@@ -298,6 +298,40 @@ class OverviewAndOrphanTests(TestCase):
         self.assertEqual((orphan.status, orphan.ignore_note), ('ignored', 'lab'))
 
 
+class DashboardTests(TestCase):
+    def test_widget(self):
+        from django.test import RequestFactory
+        from uuid import uuid4
+        from django.utils import timezone
+        from core.models import Job
+        from virtualization.models import VirtualMachine
+        from .dashboard import BaramundiStatusWidget
+        from .jobs import EndpointSyncJob
+        from .models import UnmatchedEndpoint
+        ensure_custom_fields()
+        site, dt, role, cluster = _objects('db')
+        Device.objects.create(name='d1', site=site, device_type=dt, role=role, custom_field_data={CF_ENDPOINT: G1})
+        Device.objects.create(name='d2', site=site, device_type=dt, role=role)
+        VirtualMachine.objects.create(name='v1', cluster=cluster)
+        UnmatchedEndpoint.objects.create(endpoint_id=G2, display_name='open-one')
+        UnmatchedEndpoint.objects.create(endpoint_id=G3, display_name='ignored-one', status='ignored')
+        Job.objects.create(name=EndpointSyncJob.Meta.name, status='completed', completed=timezone.now(), job_id=uuid4())
+
+        request = RequestFactory().get('/')
+        request.user = User.objects.create(username='admin_d', is_superuser=True)
+        html = BaramundiStatusWidget().render(request)
+        self.assertIn('1 of 2 with endpoint ID', html)
+        self.assertIn('0 of 1 with endpoint ID', html)
+        self.assertIn('badge text-bg-warning">1<', html)  # ignored orphans are not counted
+        self.assertIn('/core/jobs/', html)
+
+        request.user = User.objects.create(username='nobody_d')
+        html = BaramundiStatusWidget().render(request)
+        self.assertIn('0 of 0 with endpoint ID', html)
+        self.assertNotIn('orphans/', html)
+        self.assertNotIn('/core/jobs/', html)
+
+
 class TranslationTests(TestCase):
     def test_compiled_catalog_is_current(self):
         """django.mo is shipped (target systems usually lack gettext) - it must contain every translated msgid."""

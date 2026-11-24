@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-24 20:06+0000\n"
+"POT-Creation-Date: 2026-11-24 20:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,12 @@ msgstr "baramundi-Endpoint-ID"
 
 msgid "Set by the endpoint sync; can be corrected manually"
 msgstr "Wird vom Endpoint-Abgleich gesetzt; kann manuell korrigiert werden"
+
+msgid "baramundi"
+msgstr "baramundi"
+
+msgid "Last endpoint sync, devices/VMs with endpoint ID and open baramundi orphans."
+msgstr "Letzter Endpoint-Abgleich, Geräte/VMs mit Endpoint-ID und offene baramundi-Orphans."
 
 msgid "Assigned"
 msgstr "Zugeordnet"
@@ -250,6 +256,19 @@ msgstr "Sie dürfen dieses Objekt nicht anlegen."
 
 msgid "baramundi last checked"
 msgstr "baramundi zuletzt geprüft"
+
+msgid "Last sync"
+msgstr "Letzter Abgleich"
+
+msgid "never"
+msgstr "noch nie"
+
+#, python-format
+msgid "%(assigned)s of %(total)s with endpoint ID"
+msgstr "%(assigned)s von %(total)s mit Endpoint-ID"
+
+msgid "Open orphans"
+msgstr "Offene Orphans"
 
 msgid "Endpoint"
 msgstr "Endpoint"

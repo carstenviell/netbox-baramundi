@@ -6,7 +6,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 
 ## [Unveröffentlicht]
 ### Offen
-- Gegen den echten bMS verifizieren: Job-Zuweisung und `/Start` (Verbindungstest und Endpoint-Abgleich am 2026-11-24 bestätigt).
+- Gegen den echten bMS verifizieren: Job-Zuweisung und `/Start` (Verbindungstest, Endpoint-Abgleich, Sync-Übersicht und Orphans am 2026-11-24 bestätigt).
+
+## [0.3.0] – 2026-11-24
+### Neu
+- Dashboard-Widget *baramundi*: letzter Endpoint-Abgleich (Status, Link auf den Job), Geräte und VMs mit Endpoint-ID (x von y) und offene baramundi-Orphans. Die Zahlen berücksichtigen die Rechte; kein bConnect-Aufruf.
 
 ## [0.2.0] – 2026-11-24
 ### Neu

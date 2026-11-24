@@ -30,6 +30,9 @@
 - Berechtigungen: Die Übersichten brauchen Leserecht auf Geräte/VMs, *Auswahl abgleichen* braucht
   `netbox_baramundi.change_endpointlink`, die Orphan-Liste `view_unmatchedendpoint`, ihre Aktionen
   `change_unmatchedendpoint` und zusätzlich `change` (Zuordnen) bzw. `add` (Importieren) auf Geräte/VMs.
+- **Dashboard-Widget** *baramundi*: letzter Endpoint-Abgleich (mit Status und Link auf den Job), Geräte und VMs mit
+  Endpoint-ID (x von y, Fortschrittsbalken) und Anzahl offener baramundi-Orphans. Die Zahlen berücksichtigen die Rechte
+  des Benutzers; kein bConnect-Aufruf. Bestehende Benutzer fügen es einmal über *Dashboard anpassen → Widget hinzufügen* hinzu.
 - Karte *baramundi* auf Geräte-/VM-Seiten (Endpoint-ID) und Tab *baramundi* mit Live-Daten des Endpoints (Hostname, Betriebssystem, zuletzt gesehen; 5 Minuten gecacht). bConnect wird erst beim Öffnen des Tabs abgefragt.
 - `netbox_baramundi.client.BConnect` für andere Plugins, z. B. das baramundi-Backend von
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
@@ -43,21 +46,21 @@
 ## Installation
 
 Das Plugin liegt nicht auf PyPI. Installiert wird aus dem GitHub-Release-Archiv – das funktioniert ohne `git`,
-auch im netbox-docker-Image. `v0.2.0` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
+auch im netbox-docker-Image. `v0.3.0` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
 
 **NetBox aus dem Quellcode (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
+sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.3.0.tar.gz
 
 # bleibt bei NetBox-Upgrades erhalten (upgrade.sh installiert local_requirements.txt neu)
-echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
+echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.3.0.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
 ```
 
 **netbox-docker:** in `plugin_requirements.txt`
 
 ```text
-https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
+https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.3.0.tar.gz
 ```
 
 und in `Dockerfile-Plugins` (aus dem `netbox`, `netbox-worker` und `netbox-housekeeping` per `docker-compose.override.yml` gebaut werden):

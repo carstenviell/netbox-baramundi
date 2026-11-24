@@ -6,7 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versio
 
 ## [Unreleased]
 ### Open
-- Verify against a real bMS: job assignment and `/Start` (connection test and endpoint sync verified on 2026-11-24).
+- Verify against a real bMS: job assignment and `/Start` (connection test, endpoint sync, sync overview and orphans verified on 2026-11-24).
+
+## [0.3.0] – 2026-11-24
+### Added
+- Dashboard widget *baramundi*: last endpoint sync (status, link to the job), devices and VMs with endpoint ID (x of y) and open baramundi orphans. Counts respect permissions; no bConnect call.
 
 ## [0.2.0] – 2026-11-24
 ### Added

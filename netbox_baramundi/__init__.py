@@ -5,8 +5,8 @@ from netbox.plugins import PluginConfig
 class BaramundiConfig(PluginConfig):
     name = 'netbox_baramundi'
     verbose_name = 'baramundi'
-    description = 'baramundi Management Suite integration via bConnect API v2 (endpoint mapping, sync overview, orphans with import, endpoint panel).'
-    version = '0.2.0'
+    description = 'baramundi Management Suite integration via bConnect API v2 (endpoint mapping, sync overview, orphans with import, dashboard widget, endpoint panel).'
+    version = '0.3.0'
     author = 'Carsten Viell'
     base_url = 'baramundi'
     min_version = '4.7.0'
@@ -17,7 +17,7 @@ class BaramundiConfig(PluginConfig):
 
     def ready(self):
         super().ready()
-        from . import jobs  # noqa: F401  (registers the system job)
+        from . import dashboard, jobs  # noqa: F401  (registers the widget and the system job)
         from .custom_fields import ensure_custom_fields
         post_migrate.connect(ensure_custom_fields, sender=self)
 
