@@ -5,11 +5,12 @@
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionen nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
-### Geändert
-- README: Passwort unter systemd mit beiden Wegen beschrieben – direkt per `systemctl edit` (`Environment=`, `%` als `%%`) und per Umgebungsdatei –, danach ein gemeinsamer Schritt zum Neuladen und Prüfen.
-
 ### Offen
 - Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
+
+## [0.1.5] – 2026-11-24
+### Geändert
+- README: Passwort unter systemd mit beiden Wegen beschrieben – direkt per `systemctl edit` (`Environment=`, `%` als `%%`) und per Umgebungsdatei –, danach ein gemeinsamer Schritt zum Neuladen und Prüfen.
 
 ## [0.1.4] – 2026-11-24
 ### Geändert

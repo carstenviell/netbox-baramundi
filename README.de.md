@@ -26,21 +26,21 @@
 ## Installation
 
 Das Plugin liegt nicht auf PyPI. Installiert wird aus dem GitHub-Release-Archiv – das funktioniert ohne `git`,
-auch im netbox-docker-Image. `v0.1.4` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
+auch im netbox-docker-Image. `v0.1.5` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
 
 **NetBox aus dem Quellcode (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.4.tar.gz
+sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
 
 # bleibt bei NetBox-Upgrades erhalten (upgrade.sh installiert local_requirements.txt neu)
-echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.4.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
+echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
 ```
 
 **netbox-docker:** in `plugin_requirements.txt`
 
 ```text
-https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.4.tar.gz
+https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
 ```
 
 und in `Dockerfile-Plugins` (aus dem `netbox`, `netbox-worker` und `netbox-housekeeping` per `docker-compose.override.yml` gebaut werden):

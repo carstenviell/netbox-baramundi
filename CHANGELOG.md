@@ -5,11 +5,12 @@
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 
 ## [Unreleased]
-### Changed
-- README: systemd password setup describes both ways – directly with `systemctl edit` (`Environment=`, `%` as `%%`) and with an environment file – followed by a common reload/check step.
-
 ### Open
 - Verify against a real bMS: connection test, endpoint sync, job assignment and `/Start`.
+
+## [0.1.5] – 2026-11-24
+### Changed
+- README: systemd password setup describes both ways – directly with `systemctl edit` (`Environment=`, `%` as `%%`) and with an environment file – followed by a common reload/check step.
 
 ## [0.1.4] – 2026-11-24
 ### Changed
