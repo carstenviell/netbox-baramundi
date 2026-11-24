@@ -1,0 +1,9 @@
+{% load i18n helpers %}
+<table class="table table-hover attr-table mb-0">
+  <tr><th scope="row">{% trans "Display name" %}</th><td>{{ orphan.display_name|placeholder }}</td></tr>
+  <tr><th scope="row">{% trans "Host name" %}</th><td>{{ orphan.host_name|placeholder }}</td></tr>
+  <tr><th scope="row">{% trans "Endpoint ID" %}</th><td><code>{{ orphan.endpoint_id }}</code></td></tr>
+  <tr><th scope="row">{% trans "Type" %}</th><td>{{ orphan.endpoint_type|placeholder }}</td></tr>
+  <tr><th scope="row">{% trans "Operating system" %}</th><td>{{ orphan.operating_system|placeholder }}</td></tr>
+  <tr><th scope="row">{% trans "Serial number" %}</th><td>{{ orphan.serial_number|placeholder }}</td></tr>
+</table>

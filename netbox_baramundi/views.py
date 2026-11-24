@@ -1,7 +1,10 @@
 from django.contrib import messages
 from django.core.cache import cache
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import redirect, render
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views import View
 
@@ -13,11 +16,18 @@ from virtualization.models import VirtualMachine
 
 from .client import BConnect, BConnectError
 from .custom_fields import endpoint_id_for
-from .forms import BaramundiSettingsForm
+from .filtersets import DeviceEndpointFilterSet, OrphanFilterSet, VMEndpointFilterSet
+from .forms import (BaramundiSettingsForm, DeviceEndpointFilterForm, ImportDefaultsForm, OrphanAssignForm,
+                    OrphanImportForm, VMEndpointFilterForm)
 from .jobs import EndpointSyncJob
-from .models import BaramundiSettings
+from .models import BaramundiSettings, UnmatchedEndpoint
+from .object_actions import BulkEndpointSync, BulkImportSelected
+from .sync import assign_endpoint, import_endpoint
+from .tables import DeviceEndpointTable, OrphanTable, VMEndpointTable
 
 PERM = 'netbox_baramundi.change_baramundisettings'
+LINK_PERM = 'netbox_baramundi.change_endpointlink'
+ORPHAN_PERM = 'netbox_baramundi.change_unmatchedendpoint'
 
 
 class SuperuserMixin(PermissionRequiredMixin):
@@ -65,6 +75,168 @@ class EndpointSyncView(PermissionRequiredMixin, View):
         job = EndpointSyncJob.enqueue(user=request.user)
         messages.success(request, _('Endpoint sync enqueued.'))
         return redirect(job.get_absolute_url())
+
+
+# -- sync overview ------------------------------------------------------------------
+class DeviceSyncOverviewView(generic.ObjectListView):
+    queryset = Device.objects.select_related('baramundi_link', 'site', 'role', 'device_type__manufacturer')
+    table = DeviceEndpointTable
+    filterset = DeviceEndpointFilterSet
+    filterset_form = DeviceEndpointFilterForm
+    actions = (BulkEndpointSync,)
+
+
+class VMSyncOverviewView(generic.ObjectListView):
+    queryset = VirtualMachine.objects.select_related('baramundi_link', 'site', 'cluster', 'role')
+    table = VMEndpointTable
+    filterset = VMEndpointFilterSet
+    filterset_form = VMEndpointFilterForm
+    actions = (BulkEndpointSync,)
+
+
+def _return_url(request, default):
+    url = request.POST.get('return_url') or request.GET.get('return_url')
+    if url and url_has_allowed_host_and_scheme(url, allowed_hosts={request.get_host()}):
+        return url
+    return reverse(default)
+
+
+class BulkEndpointSyncView(PermissionRequiredMixin, View):
+    """Sync only the selected (or all filtered) devices/VMs; the orphan list is refreshed by the full run."""
+    permission_required = LINK_PERM
+
+    def post(self, request, kind):
+        model, filterset = (Device, DeviceEndpointFilterSet) if kind == 'devices' else (VirtualMachine, VMEndpointFilterSet)
+        queryset = model.objects.restrict(request.user, 'view')
+        if request.POST.get('_all'):
+            ids = list(filterset(request.GET, queryset=queryset).qs.values_list('pk', flat=True))
+        else:
+            ids = list(queryset.filter(pk__in=request.POST.getlist('pk')).values_list('pk', flat=True))
+        EndpointSyncJob.enqueue(user=request.user, **{'device_ids' if kind == 'devices' else 'vm_ids': ids})
+        messages.success(request, _('Endpoint sync for %(count)d object(s) enqueued.') % {'count': len(ids)})
+        return redirect(_return_url(request, f'plugins:netbox_baramundi:sync_{kind}'))
+
+
+# -- orphans -----------------------------------------------------------------------
+class OrphanListView(generic.ObjectListView):
+    # no add/import/export/edit/delete views exist - per-row actions are plain links (tables.OrphanTable)
+    queryset = UnmatchedEndpoint.objects.all()
+    table = OrphanTable
+    filterset = OrphanFilterSet
+    actions = (BulkImportSelected,)
+    template_name = 'netbox_baramundi/orphan_list.html'
+
+    def get(self, request, *args, **kwargs):
+        if 'status' not in request.GET:  # default view: open items only
+            request.GET = request.GET.copy()
+            request.GET['status'] = 'unresolved'
+        return super().get(request, *args, **kwargs)
+
+
+class OrphanMixin(PermissionRequiredMixin):
+    permission_required = ORPHAN_PERM
+
+    def orphan(self, request, pk):
+        return get_object_or_404(UnmatchedEndpoint.objects.restrict(request.user, 'change'), pk=pk)
+
+
+class RefreshOrphansView(OrphanMixin, View):
+    def post(self, request):
+        job = EndpointSyncJob.enqueue(user=request.user)
+        messages.success(request, _('Endpoint sync enqueued; the list is refreshed when it has finished.'))
+        return redirect(job.get_absolute_url())
+
+
+class AssignOrphanView(OrphanMixin, View):
+    template_name = 'netbox_baramundi/orphan_assign.html'
+
+    def get(self, request, pk):
+        return render(request, self.template_name,
+                      {'orphan': self.orphan(request, pk), 'form': OrphanAssignForm(user=request.user)})
+
+    def post(self, request, pk):
+        orphan = self.orphan(request, pk)
+        form = OrphanAssignForm(request.POST, user=request.user)
+        if form.is_valid():
+            target = form.cleaned_data['target']
+            try:
+                assign_endpoint(target, orphan.endpoint_id)
+            except ValidationError as exc:
+                form.add_error(None, exc)
+            else:
+                orphan.status = 'assigned'
+                orphan.assigned_device = target if isinstance(target, Device) else None
+                orphan.assigned_vm = target if isinstance(target, VirtualMachine) else None
+                orphan.save(update_fields=['status', 'assigned_device', 'assigned_vm'])
+                messages.success(request, _('Endpoint assigned to %(obj)s.') % {'obj': target})
+                return redirect('plugins:netbox_baramundi:orphan_list')
+        return render(request, self.template_name, {'orphan': orphan, 'form': form})
+
+
+class ImportOrphanView(OrphanMixin, View):
+    template_name = 'netbox_baramundi/orphan_import.html'
+
+    def get(self, request, pk):
+        orphan = self.orphan(request, pk)
+        form = OrphanImportForm(initial={'name': orphan.suggested_name, 'status': 'active'})
+        return render(request, self.template_name, {'orphan': orphan, 'form': form})
+
+    def post(self, request, pk):
+        orphan = self.orphan(request, pk)
+        form = OrphanImportForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            try:
+                obj = import_endpoint(orphan, data['kind'], data, request.user, name=data['name'])
+            except ValidationError as exc:
+                form.add_error(None, exc)
+            else:
+                messages.success(request, _('%(obj)s created from baramundi.') % {'obj': obj})
+                return redirect(obj.get_absolute_url())
+        return render(request, self.template_name, {'orphan': orphan, 'form': form})
+
+
+class BulkImportOrphansView(OrphanMixin, View):
+    """Step 1 (from the list): show the defaults form for the selection. Step 2 (_import): create the objects;
+    one transaction per endpoint, failures are skipped and reported."""
+    template_name = 'netbox_baramundi/orphan_bulk_import.html'
+
+    def post(self, request):
+        orphans = UnmatchedEndpoint.objects.restrict(request.user, 'change').filter(
+            pk__in=request.POST.getlist('pk'), status__in=('unresolved', 'ignored'))
+        if '_import' not in request.POST:
+            form = ImportDefaultsForm(initial={'status': 'active'})
+        else:
+            form = ImportDefaultsForm(request.POST)
+            if form.is_valid():
+                data, created, failed = form.cleaned_data, 0, []
+                for orphan in orphans:
+                    try:
+                        import_endpoint(orphan, data['kind'], data, request.user)
+                        created += 1
+                    except ValidationError as exc:
+                        failed.append(f'{orphan}: {" ".join(exc.messages)}')
+                if created:
+                    messages.success(request, _('%(count)d object(s) created from baramundi.') % {'count': created})
+                for line in failed:
+                    messages.error(request, line)
+                return redirect('plugins:netbox_baramundi:orphan_list')
+        return render(request, self.template_name, {'orphans': orphans, 'form': form})
+
+
+class IgnoreOrphanView(OrphanMixin, View):
+    template_name = 'netbox_baramundi/orphan_ignore.html'
+
+    def get(self, request, pk):
+        return render(request, self.template_name, {'orphan': self.orphan(request, pk)})
+
+    def post(self, request, pk):
+        orphan = self.orphan(request, pk)
+        orphan.status = 'ignored'
+        orphan.ignore_note = request.POST.get('ignore_note', '')[:255]
+        orphan.save(update_fields=['status', 'ignore_note'])
+        messages.success(request, _('Endpoint marked as ignored.'))
+        return redirect('plugins:netbox_baramundi:orphan_list')
 
 
 def cached_endpoint(endpoint_id):

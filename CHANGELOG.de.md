@@ -6,7 +6,16 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 
 ## [Unveröffentlicht]
 ### Offen
-- Gegen den echten bMS verifizieren: Verbindungstest, Endpoint-Abgleich, Job-Zuweisung und `/Start`.
+- Gegen den echten bMS verifizieren: Job-Zuweisung und `/Start` (Verbindungstest und Endpoint-Abgleich am 2026-11-24 bestätigt).
+
+## [0.2.0] – 2026-11-24
+### Neu
+- Sync-Übersicht für Geräte und für virtuelle Maschinen: Endpoint-ID, Status mit Grund (per Name zugeordnet, manuell zugeordnet, importiert, nicht gefunden, mehrdeutig mit Kandidaten-IDs, veraltet), letzte Prüfung, Statusfilter und *Auswahl mit baramundi abgleichen*.
+- baramundi-Orphans: Endpoints ohne NetBox-Objekt, mit *Zuordnen* (vorhandenes Gerät/VM), *Importieren* (neues Gerät oder neue VM inkl. Seriennummer, Betriebssystem, Kommentar), Massenimport mit gemeinsamen Werten und *Ignorieren*.
+- Neue Berechtigungen `change_endpointlink` und `view`/`change_unmatchedendpoint` (Migration `0003`).
+
+### Geändert
+- Der Endpoint-Abgleich vergibt keine Endpoint-ID mehr, die schon an einem anderen Objekt steht, und markiert Objekte, deren Endpoint in baramundi nicht mehr existiert, als *veraltet* (das Feld selbst bleibt unverändert).
 
 ## [0.1.5] – 2026-11-24
 ### Geändert

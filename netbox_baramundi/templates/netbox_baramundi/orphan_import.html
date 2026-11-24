@@ -1,0 +1,25 @@
+{% extends 'generic/_base.html' %}
+{% load i18n helpers %}
+
+{% block title %}{% blocktrans trimmed with name=orphan %}Import baramundi endpoint "{{ name }}"{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <form method="post" class="object-edit mt-5">
+    {% csrf_token %}
+    <div class="card mb-3">
+      <h2 class="card-header">{% trans "baramundi endpoint" %}</h2>
+      {% include 'netbox_baramundi/inc/orphan_summary.html' %}
+    </div>
+    <div class="card mb-3">
+      <h2 class="card-header">{% trans "Create in NetBox" %}</h2>
+      <div class="card-body">
+        <p class="text-muted">{% trans "The endpoint ID is set on the new object. The serial number (devices only), operating system and baramundi comment are taken over." %}</p>
+        {% include 'htmx/form.html' with form=form %}
+      </div>
+    </div>
+    <div class="btn-float-group-right">
+      <a href="{% url 'plugins:netbox_baramundi:orphan_list' %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-success">{% trans "Import" %}</button>
+    </div>
+  </form>
+{% endblock content %}

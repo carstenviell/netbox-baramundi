@@ -1,0 +1,28 @@
+{% extends 'generic/_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Import baramundi endpoints" %}{% endblock %}
+
+{% block content %}
+  <form method="post" class="object-edit mt-5">
+    {% csrf_token %}
+    {% for orphan in orphans %}<input type="hidden" name="pk" value="{{ orphan.pk }}">{% endfor %}
+    <div class="card mb-3">
+      <h2 class="card-header">{% blocktrans trimmed count n=orphans|length %}{{ n }} endpoint selected{% plural %}{{ n }} endpoints selected{% endblocktrans %}</h2>
+      <div class="card-body">
+        <p class="mb-0">{% for orphan in orphans %}{{ orphan.suggested_name }}{% if not forloop.last %}, {% endif %}{% empty %}<span class="text-danger">{% trans "No open endpoints selected." %}</span>{% endfor %}</p>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <h2 class="card-header">{% trans "Common values" %}</h2>
+      <div class="card-body">
+        <p class="text-muted">{% trans "Each endpoint gets its display name (or the short host name) as name. Endpoints that cannot be created, e.g. because the name already exists, are skipped and listed." %}</p>
+        {% include 'htmx/form.html' with form=form %}
+      </div>
+    </div>
+    <div class="btn-float-group-right">
+      <a href="{% url 'plugins:netbox_baramundi:orphan_list' %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" name="_import" value="1" class="btn btn-success"{% if not orphans %} disabled{% endif %}>{% trans "Import" %}</button>
+    </div>
+  </form>
+{% endblock content %}

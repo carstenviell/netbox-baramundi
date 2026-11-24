@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 14:20+0100\n"
+"POT-Creation-Date: 2026-11-24 20:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,72 @@ msgstr "baramundi-Endpoint-ID"
 
 msgid "Set by the endpoint sync; can be corrected manually"
 msgstr "Wird vom Endpoint-Abgleich gesetzt; kann manuell korrigiert werden"
+
+msgid "Assigned"
+msgstr "Zugeordnet"
+
+msgid "Stale"
+msgstr "Veraltet"
+
+msgid "Ambiguous"
+msgstr "Mehrdeutig"
+
+msgid "Not found"
+msgstr "Nicht gefunden"
+
+msgid "Never checked"
+msgstr "Nie geprüft"
+
+msgid "baramundi status"
+msgstr "baramundi-Status"
+
+msgid "Search"
+msgstr "Suche"
+
+msgid "Device"
+msgstr "Gerät"
+
+msgid "Virtual machine"
+msgstr "Virtuelle Maschine"
+
+msgid "Object type"
+msgstr "Objekttyp"
+
+msgid "This field is required."
+msgstr "Dieses Feld ist erforderlich."
+
+msgid "Create as"
+msgstr "Anlegen als"
+
+msgid "Site"
+msgstr "Standort"
+
+msgid "Role"
+msgstr "Rolle"
+
+msgid "Device type"
+msgstr "Gerätetyp"
+
+msgid "Devices only"
+msgstr "Nur für Geräte"
+
+msgid "Cluster"
+msgstr "Cluster"
+
+msgid "Virtual machines only (site or cluster required)"
+msgstr "Nur für virtuelle Maschinen (Standort oder Cluster erforderlich)"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Required for devices."
+msgstr "Für Geräte erforderlich."
+
+msgid "A virtual machine needs a site or a cluster."
+msgstr "Eine virtuelle Maschine braucht einen Standort oder einen Cluster."
+
+msgid "Name"
+msgstr "Name"
 
 msgid "Only https:// URLs are allowed."
 msgstr "Nur https://-URLs sind erlaubt."
@@ -72,11 +138,127 @@ msgstr "Timeout (s)"
 msgid "baramundi settings"
 msgstr "baramundi-Einstellungen"
 
-msgid "No baramundi endpoint assigned (field: baramundi endpoint ID)."
-msgstr "Kein baramundi-Endpoint zugeordnet (Feld: baramundi-Endpoint-ID)."
+msgid "Matched by name"
+msgstr "Per Name zugeordnet"
+
+msgid "Assigned manually"
+msgstr "Manuell zugeordnet"
+
+msgid "Imported from baramundi"
+msgstr "Aus baramundi importiert"
+
+msgid "Endpoint no longer exists"
+msgstr "Endpoint existiert nicht mehr"
+
+msgid "state"
+msgstr "Zustand"
+
+msgid "message"
+msgstr "Meldung"
+
+msgid "last checked"
+msgstr "zuletzt geprüft"
+
+msgid "baramundi endpoint link"
+msgstr "baramundi-Endpoint-Verknüpfung"
+
+msgid "baramundi endpoint links"
+msgstr "baramundi-Endpoint-Verknüpfungen"
+
+msgid "Unresolved"
+msgstr "Offen"
+
+msgid "Ignored"
+msgstr "Ignoriert"
+
+msgid "Imported"
+msgstr "Importiert"
+
+msgid "endpoint ID"
+msgstr "Endpoint-ID"
+
+msgid "host name"
+msgstr "Hostname"
+
+msgid "display name"
+msgstr "Anzeigename"
+
+msgid "serial number"
+msgstr "Seriennummer"
+
+msgid "operating system"
+msgstr "Betriebssystem"
+
+msgid "endpoint type"
+msgstr "Endpoint-Typ"
+
+msgid "comment"
+msgstr "Kommentar"
+
+msgid "status"
+msgstr "Status"
+
+msgid "note"
+msgstr "Notiz"
+
+msgid "last seen"
+msgstr "zuletzt gesehen"
+
+msgid "unmatched baramundi endpoint"
+msgstr "nicht zugeordneter baramundi-Endpoint"
+
+msgid "unmatched baramundi endpoints"
+msgstr "nicht zugeordnete baramundi-Endpoints"
+
+msgid "Sync overview: devices"
+msgstr "Sync-Übersicht: Geräte"
+
+msgid "Sync overview: virtual machines"
+msgstr "Sync-Übersicht: virtuelle Maschinen"
+
+msgid "baramundi orphans"
+msgstr "baramundi-Orphans"
+
+msgid "Sync selected with baramundi"
+msgstr "Auswahl mit baramundi abgleichen"
+
+msgid "Import selected"
+msgstr "Auswahl importieren"
+
+#, python-format
+msgid "Endpoint %(id)s no longer exists in baramundi."
+msgstr "Endpoint %(id)s existiert in baramundi nicht mehr."
+
+#, python-format
+msgid "Several endpoints match: %(ids)s"
+msgstr "Mehrere Endpoints passen: %(ids)s"
+
+#, python-format
+msgid "%(obj)s already has endpoint ID %(id)s. Clear it first."
+msgstr "%(obj)s hat bereits die Endpoint-ID %(id)s. Bitte zuerst leeren."
+
+#, python-format
+msgid "Endpoint ID %(id)s is already set on %(obj)s."
+msgstr "Die Endpoint-ID %(id)s ist bereits bei %(obj)s gesetzt."
+
+#, python-format
+msgid "Operating system (baramundi): %(os)s"
+msgstr "Betriebssystem (baramundi): %(os)s"
+
+msgid "You are not allowed to create this object."
+msgstr "Sie dürfen dieses Objekt nicht anlegen."
+
+msgid "baramundi last checked"
+msgstr "baramundi zuletzt geprüft"
 
 msgid "Endpoint"
 msgstr "Endpoint"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "No baramundi endpoint assigned (field: baramundi endpoint ID)."
+msgstr "Kein baramundi-Endpoint zugeordnet (Feld: baramundi-Endpoint-ID)."
 
 msgid "Host name"
 msgstr "Hostname"
@@ -89,6 +271,90 @@ msgstr "Zuletzt gesehen"
 
 msgid "Logical group"
 msgstr "Logische Gruppe"
+
+msgid "Assign"
+msgstr "Zuordnen"
+
+msgid "Import"
+msgstr "Importieren"
+
+msgid "Ignore"
+msgstr "Ignorieren"
+
+msgid "Display name"
+msgstr "Anzeigename"
+
+msgid "Endpoint ID"
+msgstr "Endpoint-ID"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Serial number"
+msgstr "Seriennummer"
+
+#, python-format
+msgid "Assign baramundi endpoint \"%(name)s\""
+msgstr "baramundi-Endpoint „%(name)s“ zuordnen"
+
+msgid "baramundi endpoint"
+msgstr "baramundi-Endpoint"
+
+msgid "Assign to an existing device or virtual machine"
+msgstr "Einem vorhandenen Gerät oder einer virtuellen Maschine zuordnen"
+
+msgid "The endpoint ID is written to the selected object. An object that already has a different endpoint ID is not changed."
+msgstr "Die Endpoint-ID wird beim gewählten Objekt eingetragen. Ein Objekt, das bereits eine andere Endpoint-ID hat, wird nicht verändert."
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Import baramundi endpoints"
+msgstr "baramundi-Endpoints importieren"
+
+#, python-format
+msgid "%(n)s endpoint selected"
+msgid_plural "%(n)s endpoints selected"
+msgstr[0] "%(n)s Endpoint ausgewählt"
+msgstr[1] "%(n)s Endpoints ausgewählt"
+
+msgid "No open endpoints selected."
+msgstr "Keine offenen Endpoints ausgewählt."
+
+msgid "Common values"
+msgstr "Gemeinsame Werte"
+
+msgid "Each endpoint gets its display name (or the short host name) as name. Endpoints that cannot be created, e.g. because the name already exists, are skipped and listed."
+msgstr "Jeder Endpoint erhält seinen Anzeigenamen (oder den kurzen Hostnamen) als Namen. Endpoints, die sich nicht anlegen lassen, etwa weil der Name schon existiert, werden übersprungen und aufgelistet."
+
+#, python-format
+msgid "Ignore baramundi endpoint \"%(name)s\""
+msgstr "baramundi-Endpoint „%(name)s“ ignorieren"
+
+msgid "Mark as intentionally not in NetBox"
+msgstr "Als bewusst nicht in NetBox markieren"
+
+msgid "The endpoint is hidden from the open orphans. It can still be assigned or imported later from the “Ignored” view."
+msgstr "Der Endpoint wird aus den offenen Orphans ausgeblendet. Über die Ansicht „Ignoriert“ lässt er sich später weiterhin zuordnen oder importieren."
+
+msgid "Note (optional)"
+msgstr "Notiz (optional)"
+
+#, python-format
+msgid "Import baramundi endpoint \"%(name)s\""
+msgstr "baramundi-Endpoint „%(name)s“ importieren"
+
+msgid "Create in NetBox"
+msgstr "In NetBox anlegen"
+
+msgid "The endpoint ID is set on the new object. The serial number (devices only), operating system and baramundi comment are taken over."
+msgstr "Die Endpoint-ID wird beim neuen Objekt gesetzt. Seriennummer (nur Geräte), Betriebssystem und baramundi-Kommentar werden übernommen."
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Refresh from baramundi"
+msgstr "Von baramundi aktualisieren"
 
 msgid "bConnect connection (API v2)"
 msgstr "bConnect-Verbindung (API v2)"
@@ -119,6 +385,24 @@ msgstr "Verbunden mit %(name)s, Version %(version)s."
 msgid "Endpoint sync enqueued."
 msgstr "Endpoint-Abgleich eingereiht."
 
-#: netbox_baramundi/templates/netbox_baramundi/endpoint_card.html
-msgid "Details"
-msgstr "Details"
+#, python-format
+msgid "Endpoint sync for %(count)d object(s) enqueued."
+msgstr "Endpoint-Abgleich für %(count)d Objekt(e) eingereiht."
+
+msgid "Endpoint sync enqueued; the list is refreshed when it has finished."
+msgstr "Endpoint-Abgleich eingereiht; die Liste wird nach Abschluss aktualisiert."
+
+#, python-format
+msgid "Endpoint assigned to %(obj)s."
+msgstr "Endpoint %(obj)s zugeordnet."
+
+#, python-format
+msgid "%(obj)s created from baramundi."
+msgstr "%(obj)s aus baramundi angelegt."
+
+#, python-format
+msgid "%(count)d object(s) created from baramundi."
+msgstr "%(count)d Objekt(e) aus baramundi angelegt."
+
+msgid "Endpoint marked as ignored."
+msgstr "Endpoint als ignoriert markiert."

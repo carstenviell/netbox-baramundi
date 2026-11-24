@@ -1,0 +1,14 @@
+{% load i18n %}
+<div class="d-flex gap-1 justify-content-end">
+  {% if record.status == 'unresolved' or record.status == 'ignored' %}
+    <a href="{% url 'plugins:netbox_baramundi:orphan_assign' pk=record.pk %}" class="btn btn-sm btn-primary">{% trans "Assign" %}</a>
+    <a href="{% url 'plugins:netbox_baramundi:orphan_import' pk=record.pk %}" class="btn btn-sm btn-success">{% trans "Import" %}</a>
+    {% if record.status == 'unresolved' %}
+      <a href="{% url 'plugins:netbox_baramundi:orphan_ignore' pk=record.pk %}" class="btn btn-sm btn-outline-secondary">{% trans "Ignore" %}</a>
+    {% endif %}
+  {% elif record.assigned_device %}
+    <a href="{{ record.assigned_device.get_absolute_url }}">{{ record.assigned_device }}</a>
+  {% elif record.assigned_vm %}
+    <a href="{{ record.assigned_vm.get_absolute_url }}">{{ record.assigned_vm }}</a>
+  {% endif %}
+</div>

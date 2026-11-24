@@ -1,0 +1,20 @@
+{% extends 'generic/object_list.html' %}
+{% load i18n %}
+
+{% block extra_controls %}
+  <div class="btn-group" role="group">
+    {% with current=request.GET.status %}
+      <a href="?status=unresolved" class="btn btn-outline-secondary{% if current == 'unresolved' %} active{% endif %}">{% trans "Unresolved" %}</a>
+      <a href="?status=ignored" class="btn btn-outline-secondary{% if current == 'ignored' %} active{% endif %}">{% trans "Ignored" %}</a>
+      <a href="?status=" class="btn btn-outline-secondary{% if not current %} active{% endif %}">{% trans "All" %}</a>
+    {% endwith %}
+  </div>
+  {% if perms.netbox_baramundi.change_unmatchedendpoint %}
+    <form method="post" action="{% url 'plugins:netbox_baramundi:orphan_refresh' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-primary">
+        <i class="mdi mdi-refresh" aria-hidden="true"></i> {% trans "Refresh from baramundi" %}
+      </button>
+    </form>
+  {% endif %}
+{% endblock extra_controls %}

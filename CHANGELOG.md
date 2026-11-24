@@ -6,7 +6,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versio
 
 ## [Unreleased]
 ### Open
-- Verify against a real bMS: connection test, endpoint sync, job assignment and `/Start`.
+- Verify against a real bMS: job assignment and `/Start` (connection test and endpoint sync verified on 2026-11-24).
+
+## [0.2.0] – 2026-11-24
+### Added
+- Sync overview for devices and for virtual machines: endpoint ID, status with reason (matched, assigned manually, imported, not found, ambiguous with candidate IDs, stale), last check, status filter and *Sync selected with baramundi*.
+- baramundi orphans: endpoints without a NetBox object, with *Assign* (existing device/VM), *Import* (new device or VM incl. serial number, operating system, comment), bulk import with common values and *Ignore*.
+- New permissions `change_endpointlink` and `view`/`change_unmatchedendpoint` (migration `0003`).
+
+### Changed
+- The endpoint sync no longer assigns an endpoint ID that is already set on another object, and flags objects whose endpoint no longer exists in baramundi as *stale* (the field itself is left unchanged).
 
 ## [0.1.5] – 2026-11-24
 ### Changed

@@ -1,0 +1,23 @@
+{% extends 'generic/_base.html' %}
+{% load i18n helpers %}
+
+{% block title %}{% blocktrans trimmed with name=orphan %}Ignore baramundi endpoint "{{ name }}"{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <form method="post" class="object-edit mt-5">
+    {% csrf_token %}
+    <div class="card mb-3">
+      <h2 class="card-header">{% trans "Mark as intentionally not in NetBox" %}</h2>
+      {% include 'netbox_baramundi/inc/orphan_summary.html' %}
+      <div class="card-body">
+        <p class="text-muted">{% trans "The endpoint is hidden from the open orphans. It can still be assigned or imported later from the “Ignored” view." %}</p>
+        <label for="ignore_note" class="form-label">{% trans "Note (optional)" %}</label>
+        <input type="text" name="ignore_note" id="ignore_note" maxlength="255" class="form-control">
+      </div>
+    </div>
+    <div class="btn-float-group-right">
+      <a href="{% url 'plugins:netbox_baramundi:orphan_list' %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-warning">{% trans "Ignore" %}</button>
+    </div>
+  </form>
+{% endblock content %}

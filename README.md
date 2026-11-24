@@ -12,6 +12,22 @@
   Only empty fields are filled – existing values are never overwritten; ambiguous matches are only reported,
   every assignment is written to the job log. With several domains, check the log: a short name is matched to
   an FQDN only if it is unique.
+- **Sync overview** for devices and for virtual machines (*Plugins → baramundi*): endpoint ID, status
+  (assigned / not found / ambiguous with candidates / stale = endpoint no longer exists in baramundi / never checked),
+  last check, filter by status, and *Sync selected with baramundi* for a selection or the whole filtered list.
+  An endpoint ID that is already set on another object is never assigned a second time.
+- **baramundi orphans**: endpoints whose ID is set on no device or VM (refreshed by every full endpoint sync or
+  with *Refresh from baramundi*). Per endpoint:
+  - *Assign* it to an existing device or VM (only if that object has no other endpoint ID; recorded in the changelog),
+  - *Import* it as a new device (site, role, device type) or VM (site or cluster) – the name is prefilled with the
+    display name, serial number (devices), operating system and baramundi comment are taken over,
+  - *Ignore* it with an optional note.
+
+  Several endpoints can be imported at once with common values (*Import selected*); endpoints that cannot be
+  created (e.g. duplicate name) are skipped and listed.
+- Permissions: the overviews need view permission on devices/VMs, *Sync selected* needs
+  `netbox_baramundi.change_endpointlink`, the orphan list `view_unmatchedendpoint`, its actions
+  `change_unmatchedendpoint` plus `change` (assign) or `add` (import) on devices/VMs.
 - *baramundi* card on device/VM pages (endpoint ID) and a *baramundi* tab with live endpoint data (host name, OS, last seen; cached for 5 minutes). bConnect is only queried when the tab is opened.
 - `netbox_baramundi.client.BConnect` for other plugins, e.g. the baramundi backend of
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
@@ -25,21 +41,21 @@
 ## Installation
 
 The plugin is not published on PyPI. Install it from the GitHub release archive – this works without `git`,
-also in the netbox-docker image. Replace `v0.1.5` with the [release](https://github.com/carstenviell/netbox-baramundi/releases) you want.
+also in the netbox-docker image. Replace `v0.2.0` with the [release](https://github.com/carstenviell/netbox-baramundi/releases) you want.
 
 **NetBox installed from source (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
+sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
 
 # keep the plugin when NetBox is upgraded (upgrade.sh reinstalls local_requirements.txt)
-echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
+echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
 ```
 
 **netbox-docker:** add to `plugin_requirements.txt`
 
 ```text
-https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
+https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
 ```
 
 and to `Dockerfile-Plugins` (build `netbox`, `netbox-worker` and `netbox-housekeeping` from it via `docker-compose.override.yml`):

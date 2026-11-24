@@ -13,6 +13,23 @@
   Es werden nur leere Felder befüllt – vorhandene Werte werden nie überschrieben; mehrdeutige Treffer werden nur
   gemeldet, jede Zuordnung steht im Job-Log. Bei mehreren Domänen das Log prüfen: Ein Kurzname wird nur dann einem
   FQDN zugeordnet, wenn er eindeutig ist.
+- **Sync-Übersicht** für Geräte und für virtuelle Maschinen (*Plugins → baramundi*): Endpoint-ID, Status
+  (zugeordnet / nicht gefunden / mehrdeutig mit Kandidaten / veraltet = Endpoint existiert in baramundi nicht mehr /
+  nie geprüft), letzte Prüfung, Filter nach Status und *Auswahl mit baramundi abgleichen* für eine Auswahl oder die
+  ganze gefilterte Liste. Eine Endpoint-ID, die schon an einem anderen Objekt steht, wird nie ein zweites Mal vergeben.
+- **baramundi-Orphans**: Endpoints, deren ID an keinem Gerät und keiner VM steht (aktualisiert bei jedem vollständigen
+  Endpoint-Abgleich oder per *Von baramundi aktualisieren*). Je Endpoint:
+  - *Zuordnen* zu einem vorhandenen Gerät oder einer VM (nur wenn das Objekt keine andere Endpoint-ID hat; im
+    Changelog sichtbar),
+  - *Importieren* als neues Gerät (Standort, Rolle, Gerätetyp) oder als VM (Standort oder Cluster) – der Name ist mit
+    dem Anzeigenamen vorbelegt, Seriennummer (Geräte), Betriebssystem und baramundi-Kommentar werden übernommen,
+  - *Ignorieren* mit optionaler Notiz.
+
+  Mehrere Endpoints lassen sich mit gemeinsamen Werten auf einmal importieren (*Auswahl importieren*); Endpoints, die
+  sich nicht anlegen lassen (z. B. doppelter Name), werden übersprungen und aufgelistet.
+- Berechtigungen: Die Übersichten brauchen Leserecht auf Geräte/VMs, *Auswahl abgleichen* braucht
+  `netbox_baramundi.change_endpointlink`, die Orphan-Liste `view_unmatchedendpoint`, ihre Aktionen
+  `change_unmatchedendpoint` und zusätzlich `change` (Zuordnen) bzw. `add` (Importieren) auf Geräte/VMs.
 - Karte *baramundi* auf Geräte-/VM-Seiten (Endpoint-ID) und Tab *baramundi* mit Live-Daten des Endpoints (Hostname, Betriebssystem, zuletzt gesehen; 5 Minuten gecacht). bConnect wird erst beim Öffnen des Tabs abgefragt.
 - `netbox_baramundi.client.BConnect` für andere Plugins, z. B. das baramundi-Backend von
   [netbox-patch-management](https://github.com/carstenviell/netbox-patch-management)
@@ -26,21 +43,21 @@
 ## Installation
 
 Das Plugin liegt nicht auf PyPI. Installiert wird aus dem GitHub-Release-Archiv – das funktioniert ohne `git`,
-auch im netbox-docker-Image. `v0.1.5` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
+auch im netbox-docker-Image. `v0.2.0` ggf. durch das gewünschte [Release](https://github.com/carstenviell/netbox-baramundi/releases) ersetzen.
 
 **NetBox aus dem Quellcode (systemd):**
 
 ```bash
-sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
+sudo /opt/netbox/venv/bin/pip install https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
 
 # bleibt bei NetBox-Upgrades erhalten (upgrade.sh installiert local_requirements.txt neu)
-echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
+echo "https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz" | sudo tee -a /opt/netbox/local_requirements.txt
 ```
 
 **netbox-docker:** in `plugin_requirements.txt`
 
 ```text
-https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.1.5.tar.gz
+https://github.com/carstenviell/netbox-baramundi/archive/refs/tags/v0.2.0.tar.gz
 ```
 
 und in `Dockerfile-Plugins` (aus dem `netbox`, `netbox-worker` und `netbox-housekeeping` per `docker-compose.override.yml` gebaut werden):

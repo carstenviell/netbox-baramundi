@@ -5,8 +5,8 @@ from netbox.plugins import PluginConfig
 class BaramundiConfig(PluginConfig):
     name = 'netbox_baramundi'
     verbose_name = 'baramundi'
-    description = 'baramundi Management Suite integration via bConnect API v2 (endpoint mapping, endpoint panel).'
-    version = '0.1.5'
+    description = 'baramundi Management Suite integration via bConnect API v2 (endpoint mapping, sync overview, orphans with import, endpoint panel).'
+    version = '0.2.0'
     author = 'Carsten Viell'
     base_url = 'baramundi'
     min_version = '4.7.0'

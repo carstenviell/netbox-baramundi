@@ -136,7 +136,7 @@ class ClientTests(TestCase):
         new = Device.objects.create(name='srv01', site=site, device_type=dt, role=role)
         manual = Device.objects.create(name='app', site=site, device_type=dt, role=role,
                                        custom_field_data={CF_ENDPOINT: G3})
-        counts = sync_endpoint_ids(self.client_, logging.getLogger('test'))
+        counts, _endpoints = sync_endpoint_ids(self.client_, logging.getLogger('test'))
         new.refresh_from_db()
         manual.refresh_from_db()
         self.assertEqual(new.custom_field_data[CF_ENDPOINT], G1)
@@ -167,6 +167,136 @@ class ClientTests(TestCase):
         self.assertContains(self.client.get(with_id.get_absolute_url()), f'href="{tab}"')
         self.assertNotContains(self.client.get(without.get_absolute_url()), 'baramundi/"')
         self.assertContains(self.client.get(tab), 'alert-warning')  # not configured: shown, never raised
+
+class FakeClient:
+    def __init__(self, endpoints):
+        self._endpoints = endpoints
+
+    def endpoints(self):
+        return self._endpoints
+
+
+def _objects(prefix):
+    from virtualization.models import Cluster, ClusterType
+    site = Site.objects.create(name=prefix, slug=prefix)
+    dt = DeviceType.objects.create(manufacturer=Manufacturer.objects.create(name=prefix, slug=prefix),
+                                   model=prefix, slug=prefix)
+    role = DeviceRole.objects.create(name=prefix, slug=prefix)
+    cluster = Cluster.objects.create(name=prefix, type=ClusterType.objects.create(name=prefix, slug=prefix))
+    return site, dt, role, cluster
+
+
+class OverviewAndOrphanTests(TestCase):
+    """Sync states, orphan list, manual assignment and import (no bMS needed: FakeClient)."""
+    LOG = logging.getLogger('test')
+
+    def setUp(self):
+        ensure_custom_fields()
+        self.site, self.dt, self.role, self.cluster = _objects('ov')
+
+    def dev(self, name, endpoint_id=None):
+        return Device.objects.create(name=name, site=self.site, device_type=self.dt, role=self.role,
+                                     custom_field_data={CF_ENDPOINT: endpoint_id} if endpoint_id else {})
+
+    def test_states_and_orphans(self):
+        from .models import EndpointLink, UnmatchedEndpoint
+        from .sync import refresh_orphans
+        gone = '44444444-4444-4444-4444-444444444444'
+        matched, missing, stale = self.dev('srv01'), self.dev('nothere'), self.dev('old', gone)
+        ambiguous = self.dev('app.third.local')
+        counts, endpoints = sync_endpoint_ids(FakeClient(ENDPOINTS), self.LOG)
+        state = {o.name: EndpointLink.objects.get(device=o).state for o in (matched, missing, stale, ambiguous)}
+        self.assertEqual(state, {'srv01': 'matched', 'nothere': 'missing', 'old': 'stale', 'app.third.local': 'ambiguous'})
+        stale.refresh_from_db()
+        self.assertEqual(stale.custom_field_data[CF_ENDPOINT], gone)  # stale is flagged, never cleared
+        self.assertIn(G2, EndpointLink.objects.get(device=ambiguous).message)
+
+        UnmatchedEndpoint.objects.create(endpoint_id='55555555-5555-5555-5555-555555555555')  # vanished
+        refresh_orphans(endpoints)
+        self.assertEqual(set(UnmatchedEndpoint.objects.values_list('endpoint_id', flat=True)), {G2, G3})
+        UnmatchedEndpoint.objects.filter(endpoint_id=G3).update(status='ignored')
+        missing.custom_field_data[CF_ENDPOINT] = G2  # assigned elsewhere meanwhile
+        missing.save()
+        refresh_orphans(endpoints)
+        self.assertEqual(dict(UnmatchedEndpoint.objects.values_list('endpoint_id', 'status')),
+                         {G2: 'assigned', G3: 'ignored'})
+
+    def test_selection_and_taken_ids(self):
+        from .models import EndpointLink
+        holder = self.dev('other', G1)
+        first, second = self.dev('srv01'), self.dev('SRV01.example.local')
+        sync_endpoint_ids(FakeClient(ENDPOINTS), self.LOG, objects=[second])
+        self.assertFalse(EndpointLink.objects.filter(device=first).exists())  # not selected
+        second.refresh_from_db()
+        self.assertNotIn(CF_ENDPOINT, second.custom_field_data)  # G1 is already taken by holder
+        self.assertEqual(EndpointLink.objects.get(device=second).state, 'missing')
+        self.assertEqual(holder.custom_field_data[CF_ENDPOINT], G1)
+
+    def test_assign_endpoint(self):
+        from django.core.exceptions import ValidationError
+        from .sync import assign_endpoint
+        target, other = self.dev('target'), self.dev('busy', G2)
+        assign_endpoint(target, G1)
+        target.refresh_from_db()
+        self.assertEqual(target.custom_field_data[CF_ENDPOINT], G1)
+        with self.assertRaises(ValidationError):
+            assign_endpoint(other, G3)  # already has another ID
+        with self.assertRaises(ValidationError):
+            assign_endpoint(self.dev('free'), G1)  # ID held by target
+
+    def test_import_and_permissions(self):
+        from virtualization.models import VirtualMachine
+        from .models import UnmatchedEndpoint
+        orphan = UnmatchedEndpoint.objects.create(endpoint_id=G3, display_name='app-other', host_name='app.other.local',
+                                                  serial_number='SN1', operating_system='Windows 11', comment='desk 4')
+        user = User.objects.create(username='importer')
+        self.client.force_login(user)
+        url = f'/plugins/baramundi/orphans/{orphan.pk}/import/'
+        post = {'name': 'app-other', 'kind': 'device', 'site': self.site.pk, 'role': self.role.pk,
+                'device_type': self.dt.pk, 'status': 'active'}
+        self.assertEqual(self.client.post(url, post).status_code, 403)  # no orphan permission
+        grant(user, UnmatchedEndpoint, ['view', 'change'])
+        self.client.post(url, post)
+        self.assertFalse(Device.objects.filter(name='app-other').exists())  # no add_device
+        grant(user, Device, ['view', 'add'])
+        self.assertEqual(self.client.post(url, post).status_code, 302)
+        device = Device.objects.get(name='app-other')
+        self.assertEqual((device.serial, device.custom_field_data[CF_ENDPOINT]), ('SN1', G3))
+        self.assertIn('Windows 11', device.comments)
+        self.assertIn('desk 4', device.comments)
+        orphan.refresh_from_db()
+        self.assertEqual((orphan.status, orphan.assigned_device), ('imported', device))
+
+        # bulk: one VM is created, one fails on the duplicate name and is reported
+        grant(user, VirtualMachine, ['view', 'add'])
+        a = UnmatchedEndpoint.objects.create(endpoint_id=G1, display_name='vm-new')
+        b = UnmatchedEndpoint.objects.create(endpoint_id=G2, display_name='vm-new')
+        resp = self.client.post('/plugins/baramundi/orphans/bulk-import/',
+                                {'pk': [a.pk, b.pk], '_import': '1', 'kind': 'vm', 'cluster': self.cluster.pk,
+                                 'status': 'active'})
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(VirtualMachine.objects.filter(name='vm-new').count(), 1)
+        self.assertEqual(sorted(UnmatchedEndpoint.objects.filter(pk__in=[a.pk, b.pk])
+                                .values_list('status', flat=True)), ['imported', 'unresolved'])
+
+    def test_pages_render(self):
+        from .models import UnmatchedEndpoint
+        from virtualization.models import VirtualMachine
+        orphan = UnmatchedEndpoint.objects.create(endpoint_id=G1, display_name='x')
+        self.dev('srv01')
+        VirtualMachine.objects.create(name='vm1', cluster=self.cluster)
+        self.client.force_login(User.objects.create(username='admin_o', is_superuser=True))
+        for url in ('sync/devices/', 'sync/vms/', 'sync/devices/?baramundi_status=never_checked', 'orphans/',
+                    'orphans/?status=', f'orphans/{orphan.pk}/assign/', f'orphans/{orphan.pk}/import/',
+                    f'orphans/{orphan.pk}/ignore/'):
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(f'/plugins/baramundi/{url}').status_code, 200)
+        resp = self.client.post('/plugins/baramundi/orphans/bulk-import/', {'pk': [orphan.pk]})
+        self.assertContains(resp, 'name="_import"')
+        resp = self.client.post(f'/plugins/baramundi/orphans/{orphan.pk}/ignore/', {'ignore_note': 'lab'})
+        orphan.refresh_from_db()
+        self.assertEqual((orphan.status, orphan.ignore_note), ('ignored', 'lab'))
+
 
 class TranslationTests(TestCase):
     def test_compiled_catalog_is_current(self):
