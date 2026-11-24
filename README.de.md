@@ -84,24 +84,46 @@ PLUGINS_CONFIG = {
 Das Passwort des bConnect-Benutzers als Umgebungsvariable `BARAMUNDI_PASSWORD` (oder ein anderer Name mit Präfix
 `BARAMUNDI_`) für **beide** Dienste bereitstellen, Web und Worker (Docker: `env/netbox.env`).
 
-**systemd:** eine Umgebungsdatei verwenden. So steht das Passwort nicht in der Unit (`systemctl show` kann
-jeder Benutzer lesen), und systemd wertet darin keine `%`-Platzhalter aus:
+**systemd:** zwei Wege, jeweils für `netbox` **und** `netbox-rq`.
+
+*Variante A – direkt mit `systemctl edit`* (passt für Passwörter ohne Sonderzeichen):
 
 ```bash
-printf '%s\n' 'BARAMUNDI_PASSWORD=<passwort>' > /etc/netbox-baramundi.env
-chmod 600 /etc/netbox-baramundi.env
-for u in netbox netbox-rq; do
-  mkdir -p /etc/systemd/system/$u.service.d
-  printf '[Service]\nEnvironmentFile=/etc/netbox-baramundi.env\n' > /etc/systemd/system/$u.service.d/baramundi.conf
-done
-systemctl daemon-reload && systemctl restart netbox netbox-rq
-tr '\0' '\n' < /proc/$(systemctl show -p MainPID --value netbox)/environ | grep -c BARAMUNDI_   # muss 1 ausgeben
+sudo systemctl edit netbox
+sudo systemctl edit netbox-rq
 ```
 
-> **Stolperfalle:** Das Passwort **nicht** per `Environment=` in der Unit bzw. über `systemctl edit` setzen. Dort ist
-> `%` ein systemd-Platzhalter, und ein ungültiger (z. B. `%"`) lässt systemd die ganze Zeile stillschweigend
-> verwerfen. Das Plugin meldet dann *Umgebungsvariable BARAMUNDI_PASSWORD ist nicht gesetzt*. Die Zeile muss im
-> Abschnitt `[Service]` stehen, und nach jeder Änderung ist `systemctl daemon-reload` nötig.
+Im Editor jeweils zwischen die beiden Kommentarzeilen oben (`### Anything between here …` und
+`### Lines below this comment …`) einfügen, speichern und schließen:
+
+```ini
+[Service]
+Environment="BARAMUNDI_PASSWORD=<passwort>"
+```
+
+> **Stolperfalle:** In `Environment=` ist `%` ein systemd-Platzhalter und muss als `%%` geschrieben werden. Ein
+> ungültiger (z. B. `%"`) lässt systemd die ganze Zeile stillschweigend verwerfen, das Plugin meldet dann
+> *Umgebungsvariable BARAMUNDI_PASSWORD ist nicht gesetzt*. Die Abschnittsüberschrift muss genau `[Service]`
+> lauten. Hinweis: `systemctl show` zeigt das Passwort jedem Benutzer an, auf geteilten Servern daher Variante B.
+
+*Variante B – Umgebungsdatei* (empfohlen: beliebige Sonderzeichen, Datei nur für root lesbar):
+
+```bash
+printf '%s\n' 'BARAMUNDI_PASSWORD=<passwort>' | sudo tee /etc/netbox-baramundi.env >/dev/null
+sudo chmod 600 /etc/netbox-baramundi.env
+for u in netbox netbox-rq; do
+  sudo mkdir -p /etc/systemd/system/$u.service.d
+  printf '[Service]\nEnvironmentFile=/etc/netbox-baramundi.env\n' | sudo tee /etc/systemd/system/$u.service.d/baramundi.conf >/dev/null
+done
+```
+
+*Danach (beide Varianten)* neu laden, neu starten und prüfen:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart netbox netbox-rq
+sudo cat /proc/$(systemctl show -p MainPID --value netbox)/environ | tr '\0' '\n' | grep -c BARAMUNDI_   # muss 1 ausgeben
+```
 
 Nach dem Neustart *Plugins → baramundi settings* öffnen (nur Superuser).
 
