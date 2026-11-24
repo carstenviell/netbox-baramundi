@@ -6,7 +6,7 @@ class BaramundiConfig(PluginConfig):
     name = 'netbox_baramundi'
     verbose_name = 'baramundi'
     description = 'baramundi Management Suite integration via bConnect API v2 (endpoint mapping, endpoint panel).'
-    version = '0.1.3'
+    version = '0.1.4'
     author = 'Carsten Viell'
     base_url = 'baramundi'
     min_version = '4.7.0'
