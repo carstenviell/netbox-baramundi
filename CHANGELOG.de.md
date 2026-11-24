@@ -6,6 +6,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Ve
 
 ## [Unveröffentlicht]
 ### Geändert
+- README: Passwort unter systemd per `EnvironmentFile=` statt `Environment=` einrichten, mit Hinweis auf `%`-Platzhalter (ein ungültiger lässt systemd die Zeile stillschweigend verwerfen).
 - Geräte-/VM-Seiten: Statt des Bereichs unter der Rack-Ansicht gibt es eine kompakte Karte in der linken Spalte und einen Tab *baramundi* (nur mit Endpoint-ID). Die Detailseite fragt bConnect nicht mehr ab, das geschieht erst beim Öffnen des Tabs.
 
 ### Offen

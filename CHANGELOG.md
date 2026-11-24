@@ -6,6 +6,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versio
 
 ## [Unreleased]
 ### Changed
+- README: systemd setup of the password via `EnvironmentFile=` instead of `Environment=`, with a warning about `%` placeholders (an invalid one makes systemd drop the line silently).
 - Device/VM pages: the panel below the rack elevations is replaced by a compact card in the left column and a *baramundi* tab (shown only with an endpoint ID). The device page no longer calls bConnect; the live query runs only when the tab is opened.
 
 ### Open
